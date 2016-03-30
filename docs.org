@@ -1,0 +1,210 @@
+* org-gtd Documentation
+org-gtd is a [[https://en.wikipedia.org/wiki/Time_management][time-management method]] loosely based on popular [[https://en.wikipedia.org/wiki/Getting_Things_Done]["Get Things Done"]]
+techniques by [[https://en.wikipedia.org/wiki/David_Allen_(author)][David Allen]] and is implemented using the [[http://orgmode.org/][org-mode framework]] for the [[https://www.gnu.org/software/emacs/][GNU
+Emacs text-editor]]. It utilizes plain text-files to organize all managed tasks and
+related information. Powerful search functions are then used to generate a variety of
+reports relevant to gtd-like work-flows.
+
+This document will explain the various parts of this time-management method and how
+they are implemented within org-mode.
+
+** org-mode Overview
+Org-mode is an Emacs "[[https://www.gnu.org/software/emacs/manual/html_node/emacs/Major-Modes.html][major-mode]]" that takes normal plain text-files and enhances them
+with special behaviors that make them especially useful for the organization of
+information such as notes, tasks, outlines, tables and other data.
+
+A simple way to understand what using org-mode entails is by seeing its use as the
+interplay of two distinct activities:
+
+- The authoring of simple text files
+- The aggregation and reporting of data in text files
+
+All of this is accomplished by utilizing dead-simple markup which Org-mode then can
+manipulate, aggregate and display in useful ways.
+
+*** Document Authoring
+
+The core features related to org-mode editing are described in the official
+documentation on [[http://orgmode.org/manual/Document-structure.html#Document-structure][document structure]]. That said, this section will nevertheless provide
+an overview. Some useful features not covered are, [[http://orgmode.org/manual/Tables.html#Tables][tables]] and [[http://orgmode.org/manual/Hyperlinks.html#Hyperlinks][hyperlinks]].
+
+**** Outlines
+
+One of the central features of Org-mode is its easy support for hierarchical
+[[http://orgmode.org/manual/Headlines.html][outlines]]. By prefixing lines in the file with a number of asterisks or "Heading-stars"
+they become special headers that Org-mode will recognize and treat specially. The main
+way is through supporting [[http://orgmode.org/manual/Visibility-cycling.html#Visibility-cycling][dynamic folding of content]] below these Headings and [[http://orgmode.org/manual/Motion.html#Motion][easy
+navigation]] between levels.
+
+Outlines and Headings are the central structure utilized in org-gtd for specifying
+Tasks.
+
+***** Properties
+
+A feature of Outlines that gives them a rich flexibility is their support for arbitrary
+meta-data in the form of [[http://orgmode.org/manual/Properties-and-columns.html#Properties-and-columns][Key-Value Properties]]. These Properties can be specified for
+any Heading in an Outline and even [[http://orgmode.org/manual/Property-inheritance.html#Property-inheritance][support inheritance]]. Properties are used to
+automatically track various details of Tasks and for filtering in reports.
+
+***** Tags
+
+Similar to Properties, Tags are extra-data that can be associated with
+Headings. However, unlike Properties which have both a key and value, Tags are
+single-word identifiers. Multiple Tags can be associated with a single Heading and will
+standout more visually than Properties. Tags can be useful for flexible keyword
+association which is particularly helpful for unstructured searches.
+
+*** Aggregation and Reporting
+
+While dynamic outlining for single files is quite useful as a standalone feature, the
+real value of org-mode is realized in its ability to powerfully aggregate the
+information within those files.
+
+The primary feature for reporting in org-mode is the [[http://orgmode.org/manual/Agenda-views.html#Agenda-views][Agenda View]] which this section
+will try to summarize.
+
+**** Sparse Trees
+
+Before describing the various features of the Agenda View there is a related
+light-weight version that is useful when viewing individual org-mode files
+directly. This feature allows you to narrow down an Outline to just some subset of
+Headings based on some search criterion producing a "Sparse Tree." All of the Headings
+that do not match the search will be hidden allowing you to focus and navigate just the
+results.
+
+Review the documentation for [[http://orgmode.org/manual/Sparse-trees.html#Sparse-trees][Sparse Trees]] to learn the various searches you can
+perform.
+
+**** Agenda Views
+
+Agenda Views is the name that refers to the various features that make up org-mode's
+most powerful aggregation capabilities. When activated, the user is presented with a
+selection of pre-defined reports or "Views" into the data contained inside
+org-files. These Views search the org-files for relevant data and then compile them for
+display.
+
+***** Agenda Files
+
+Before the Agenda Views can search it must be told what files are available to it. The
+documentation explains how to [[http://orgmode.org/manual/Agenda-files.html#Agenda-files][add files to the agenda]].
+
+***** View Dispatcher
+
+The various Views that are available are presented for selection on the View
+[[http://orgmode.org/manual/Agenda-dispatcher.html#Agenda-dispatcher][Dispatcher]]. org-mode comes with a number of [[http://orgmode.org/manual/Built_002din-agenda-views.html#Built_002din-agenda-views][pre-built views]] but the real power lies in
+the ability to [[http://orgmode.org/manual/Custom-agenda-views.html#Custom-agenda-views][define custom Views]] relevant to specific work-flows.
+
+Each View made available on the Dispatcher is accessed with an associated key which is
+presented along with the name View. Pressing the key will leave the Dispatcher and
+enter the View.
+
+***** Agenda Buffer
+
+The function of each View is to generate a corresponding buffer that should display the
+matches across all the org-files in a useful way. These results can be [[http://orgmode.org/manual/Agenda-commands.html#Agenda-commands][navigated and
+otherwise manipulated]] in a plethora of ways. A simple case is simply visiting the file
+that contains a Header in the results by selecting it.
+
+** org-gtd Overview
+
+*** Tasks
+
+Tasks represent some actionable unit of work. Each Task is expressed as a Heading in an
+Outline. They have the following characteristics:
+
+**** Title Heading
+The Task begins with a Heading in some Outline. It can be at any level in the
+Outline. The Title is the content of the Heading and should recall the central goal of
+a Task at a glance. Phrasing of the Title as an imperative or command like "Take out
+the trash" or "Wash the dog" is typically helpful.
+
+**** Body
+The Body of the Task is all of the content within the scope of the Title including
+sub-level Headings. The Body can contain any kind of content relevant or helpful to the
+completion of the Task.
+
+**** State Keyword
+Between the Heading stars and the Title content is the State Keyword. The State of a
+Task denotes the current stage of completion. As the Task progresses the State Keyword
+will be updated to reflect that progress. The State Keyword also has other effects such
+as denoting whether a Task should be included in various reports.
+
+**** Schedule Property (optional)
+A Task may optionally feature a "SCHEDULE" property. This causes the Task to be ignored
+from reporting until the specified date, except for reports specifically for scheduled
+Tasks.
+
+**** Deadline Property (optional)
+A Task may also optionally feature a "DEADLINE" property. This causes the Task to be
+more prioritized in reports as the deadline date approaches. If the Task is not
+complete before the date, warnings will be displayed.
+
+*** Task States
+
+Each Task has a single State-Keyword. Without a State-Keyword a Heading is not
+considered a Task. A Task's State-Keyword should denote the stage of completion of the
+Task.
+
+The following Task states are defined by org-gtd:
+
+- TODO: a Task that is considered needing completion
+- NEXT: an actively prioritized or pursued Task
+- BLOCKED: a Task's completion depends on some external condition
+- CANCELED: an incomplete Task no longer needing completion
+- DONE: a complete Task
+
+**** Blocked Tasks
+
+Blocked Tasks are those whose progression depends on some external condition.
+
+When Tasks are placed into the BLOCKED state the user is prompted for a reason. This
+reason is stored in the BLOCKED property to make it easier to remember. Changing the
+Task to any other state will remove the BLOCKED property.
+
+Alternatively, adding or removing the BLOCKED property directly will automatically set
+the state of the Task.
+
+*** Task Tags
+
+Tags can be utilized for a variety of uses but org-gtd uses one Tag in particular:
+
+- HOLD: an actively de-prioritized Task
+
+Unlike a normal State-Keyword however, the HOLD Tag will apply to all Sub-tasks as
+well. The effect of the HOLD Tag is to indicate that the entire Task-tree is currently
+"on-hold" or otherwise de-prioritized. This will prevent any Tasks in the tree from
+appearing in any Agenda Views. By removing the HOLD Tag from the parent Task the tree
+will again appear in Agenda Views.
+
+*** Projects
+
+Projects are automatically derived from your org-mode files based on the structure of
+your Outlines. The definition of a Project is simple:
+
+- a Task with 1 or more Sub-tasks
+
+That's it. This definition makes Projects a simple container for representing the
+progressive completion of a collection of related Tasks.
+
+**** Active Projects
+
+Active Projects are defined as those that contain at least one Sub-task that is in the
+NEXT state. This reflects the intention to actively complete work making up the
+Project.
+
+**** In-Active Projects
+
+Conversely, Inactive Projects are those that contain no Sub-tasks in the NEXT
+state. This reflects the fact that no effort is currently being spent to move the
+Project forward.
+
+** Capture
+
+** Capture Files
+- Refile: Unfiled recently captured Tasks or Notes
+- Archive: Where finished or canceled Tasks go to die
+- Someday: Where Tasks automatically get the SOMEDAY category
+- Various Context Specific Files
+
+
+
